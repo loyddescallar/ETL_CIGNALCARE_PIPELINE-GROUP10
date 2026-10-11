@@ -4,41 +4,32 @@
 
 This repository contains the development work for the ETL pipeline of the CignalCare+ system.
 
-The project is organized around the extraction, validation, and preparation of operational data for the succeeding ETL stages.
+The project focuses on extracting, validating, and preparing operational data for the succeeding ETL stages.
 
 ## Lab 3 — Data Extraction
 
 The current project stage focuses on the first ETL stage: **Data Extraction**.
 
-Current work includes:
+Current areas of work include:
 
-- documenting the source system and extraction scope
-- profiling source data
-- defining extraction validation requirements
-- documenting extraction metadata and logging
-- defining the extraction data contract
-- preparing acceptance and handover requirements
+- Source system and extraction scope
+- Source data profiling
+- Extraction validation
+- Extraction metadata and logging
+- Extraction data contract
+- Acceptance and handover requirements
 
 ## Repository Structure
 
 ```text
-documentation/   Lab 3 documentation and project records
-extraction/      Extraction-related implementation
-validation/      Extraction validation and data-quality checks
-data/            Data-related artifacts and references
-```
+docs/
+    Project and Lab 3 documentation
 
-## Development Workflow
+pipeline/
+    ETL pipeline implementation
 
-Group 10 uses GitHub Issues, member branches, commits, and pull requests to organize and track project contributions.
+pipeline/extraction/
+    Source extraction implementation
 
-## Team
-
-- Loyd — Master
-- John Mark — Master
-- John Paul — Master
-- Marimar — Documentation
-
-## Data and Security
-
-Credentials and raw source extracts are not committed to this repository. Local environment configuration is kept outside version control.
+pipeline/validation/
+    Extraction validation and data-quality checks
