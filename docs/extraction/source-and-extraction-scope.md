@@ -115,6 +115,23 @@ After the baseline extraction, subsequent runs use timestamp-based watermark inf
 The watermark state is maintained separately from the source records and is used to determine the point from which succeeding extraction runs should retrieve data.
 
 ---
+ ## 7.1 Extraction Schedule
+
+The CignalCare+ analytics pipeline is designed as a daily batch process.
+
+The intended operational extraction schedule is:
+
+- Frequency: Daily
+- Scheduled time: 12:00 AM
+- Extraction mode: Incremental after the initial full extraction
+- Initial execution: Full extraction to establish the baseline dataset
+- Subsequent executions: Incremental extraction using the saved watermark
+
+During development and testing, the extraction script is executed manually. The production scheduler is outside the current Lab 3 implementation scope.
+
+Manual execution may be performed for testing, validation, troubleshooting, and controlled recovery activities.
+
+The scheduled extraction does not modify the CignalCare+ operational source database.
 
 ## 8. Assumptions
 

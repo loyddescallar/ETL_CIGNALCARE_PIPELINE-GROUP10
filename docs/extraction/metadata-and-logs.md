@@ -48,6 +48,44 @@ The validated full-extraction baseline was:
 
 The current extraction process does not implement a separate rejected-record dataset. If an extraction operation fails, the affected table is logged as failed rather than silently rejecting individual records.
 
+## Metadata Field Specification
+
+The extraction metadata is defined to provide traceability for every extraction run.
+
+| Metadata Field | Purpose | Example / Format |
+|---|---|---|
+| `batch_id` | Unique identifier for the extraction run | `20261018T170820026121Z` |
+| `table_name` | Identifies the processed source table | `users` |
+| `mode` | Identifies the extraction type | `full_initial` / `incremental` |
+| `started_at` | Records extraction start time | ISO 8601 UTC timestamp |
+| `finished_at` | Records extraction completion time | ISO 8601 UTC timestamp |
+| `extracted_rows` | Number of records written to the extraction output | `107` |
+| `records_read` | Number of records returned from the source query | `107` |
+| `records_rejected` | Number of records rejected during extraction | `0` for successful extraction |
+| `extraction_window` | Identifies the source time range used by the extraction | Watermark expression and saved watermark |
+| `watermark_expression` | Identifies the source field or expression used for incremental extraction | `COALESCE(updated_at, created_at)` |
+| `new_watermark` | Records the latest successful watermark | ISO 8601 timestamp |
+| `new_watermark_id` | Records the primary-key tie-breaker associated with the watermark | `107` |
+| `status` | Identifies whether the table extraction succeeded or failed | `SUCCESS` / `FAILED` |
+| `validation_result` | Records the result of extraction validation | `PASS` / `WARNING` / `FAIL` |
+| `error_code` | Identifies the error type when an extraction fails | Python exception type |
+| `error_message` | Describes the extraction failure | Error message text |
+| `extraction_duration` | Measures the elapsed time of the extraction | Derived from `started_at` and `finished_at` |
+
+For the current implementation, `records_read` corresponds to the number of rows returned by the source query and therefore equals `extracted_rows` when no row-level rejection occurs.
+
+The current extraction log stores the operational run information in `state/extraction_log.csv`. Validation results are produced separately by the extraction validation process.
+
+## Metadata and Log Usage
+
+The metadata and logs are used for:
+
+- **Monitoring** — Determine whether an extraction run completed successfully.
+- **Troubleshooting** — Identify the affected table, extraction mode, and error information.
+- **Auditing** — Trace which batch processed which source table and when it occurred.
+- **Recovery** — Determine the last successful watermark and identify the correct point for a controlled rerun.
+- **Reconciliation** — Compare extracted record counts with source record counts.
+
 ## Extraction Windows
 
 The initial extraction uses a full extraction window covering the available source records.
@@ -98,17 +136,64 @@ Example:
 
 This naming convention provides unique and traceable extraction output files.
 
-## Retention
+## Log Retention and Access
 
-Extraction logs and metadata should be retained for the period required by the project to support:
+### Retention Period
 
-- Reconciliation
-- Troubleshooting
-- Auditability
-- Extraction monitoring
-- ETL handover
+For the Lab 3 project, operational extraction logs and watermark metadata should be retained for **90 days**.
 
-The current implementation stores logs locally. Automated archival and deletion are not currently implemented.
+The 90-day period provides sufficient history for:
+
+- Troubleshooting extraction failures
+- Comparing extraction runs
+- Reviewing incremental extraction behavior
+- Supporting validation and reconciliation
+- Maintaining an operational audit trail
+
+Logs associated with an unresolved incident, validation failure, or investigation must be retained until the issue is resolved even when the normal retention period has elapsed.
+
+### Storage Location
+
+Operational extraction logs are stored locally in:
+
+`state/extraction_log.csv`
+
+Watermark state is stored in:
+
+`state/watermarks.json`
+
+Generated extraction datasets are stored in:
+
+`data/extracted/`
+
+### Access Permissions
+
+Access should be limited to authorized members responsible for the ETL pipeline.
+
+The following information must not be exposed through logs:
+
+- Database passwords
+- API keys
+- Authentication tokens
+- Unnecessary personally identifiable information
+
+### Archiving
+
+Logs required beyond the normal operational retention period may be archived to an approved project storage location.
+
+Archived files must retain their original batch identifiers and timestamps to preserve traceability.
+
+### Deletion
+
+Operational logs may be deleted only after:
+
+1. The 90-day retention period has expired.
+2. There are no unresolved extraction or validation issues requiring the logs.
+3. The logs are no longer required for project auditing or recovery.
+
+Deletion should be performed as part of a controlled maintenance process by the person responsible for ETL operations.
+
+Logs must not be deleted while they are required for troubleshooting, auditing, or recovery.
 
 ## Security
 

@@ -20,6 +20,73 @@ The extraction stage is acceptable when:
 10. Extraction execution information is logged.
 11. No unresolved extraction failure remains.
 
+## Acceptance Decision Rules
+
+The extraction result is classified using the following decision rules:
+
+| Overall Condition | Acceptance Decision | Pipeline Action | Decision Type | Responsible Role |
+|---|---|---|---|---|
+| All required validation checks PASS | APPROVED | Proceed to Transformation | Automatic | Extraction/ETL Lead |
+| One or more non-critical WARNING conditions | MANUAL REVIEW | Hold dataset until reviewed | Manual | Extraction/ETL Lead |
+| One or more critical validation checks FAIL | REJECTED | Stop affected pipeline stage and resolve/retry | Automatic stop + manual resolution | Extraction/ETL Lead |
+| Validation passes and handover package is complete | HANDED OVER | Provide extracted datasets, metadata, logs, and validation results to Transformation | Automatic after acceptance | Extraction/ETL Lead |
+
+### Automatic Approval
+
+Automatic approval is permitted when:
+
+- PostgreSQL/Supabase connection succeeds.
+- All eight required tables are available.
+- Required columns are present.
+- Primary keys contain no NULL values.
+- Primary keys are unique.
+- Source and extracted row counts reconcile for the full extraction.
+- Watermark validation passes.
+- No critical extraction error is present.
+
+### Manual Review
+
+Manual review is required when:
+
+- A non-critical warning is detected.
+- An unexpected but explainable record-count difference occurs.
+- A documented source limitation affects the extraction.
+- A schema change requires confirmation.
+- Additional investigation is required before handover.
+
+The affected dataset must remain on hold until the Extraction/ETL Lead determines whether it can proceed.
+
+### Rejection or Failure
+
+The extraction must be rejected or stopped when:
+
+- A required source table is unavailable.
+- A required column is missing.
+- A critical extraction error occurs.
+- Primary-key validation fails.
+- Duplicate primary keys are detected.
+- Source and extracted records cannot be reconciled without explanation.
+- Watermark state is invalid.
+- Required extraction output is missing.
+
+The affected extraction must be corrected and revalidated before proceeding.
+
+## Handover Package
+
+The following information is passed to the Transformation Stage:
+
+- Validated extracted CSV datasets
+- Extraction batch information
+- Extraction log
+- Watermark state
+- Validation results
+- Data contract
+- Source schema documentation
+- Known source limitations
+- Problems and mitigation documentation
+
+The handover confirms that the extraction stage has completed its responsibility without performing data cleaning, standardization, or business transformation.
+
 ## Validated Baseline
 
 The completed full extraction produced:
