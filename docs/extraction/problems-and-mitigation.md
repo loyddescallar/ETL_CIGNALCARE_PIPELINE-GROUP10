@@ -200,6 +200,37 @@ Database credentials or sensitive configuration are accidentally placed in the r
 4. Rotate credentials when necessary.
 5. Remove sensitive information from documentation and logs.
 
+## Impact on Extraction
+
+The identified problems can affect extraction in different ways:
+
+| Problem | Impact on Extraction |
+|---|---|
+| Database connection failure | Prevents the extraction process from accessing the source database. |
+| Missing source table | Prevents the affected dataset from being extracted and may make the batch incomplete. |
+| Missing or renamed column | Can cause the extraction query to fail or produce an output that does not match the extraction contract. |
+| NULL watermark | Can prevent reliable incremental tracking and may cause the affected table to fail extraction. |
+| Invalid watermark state | Can cause records to be missed or unnecessarily re-extracted. |
+| Record-count mismatch | Indicates that extraction completeness cannot be confirmed. |
+| Duplicate primary keys | Can affect record uniqueness and downstream data integrity. |
+| NULL primary keys | Prevent reliable identification and tracking of extracted records. |
+| Unexpected incremental records | May indicate incorrect watermark handling or unexpected source changes. |
+| Zero incremental records | Does not indicate failure when the source has not changed since the previous successful extraction. |
+| Missing output file | Prevents the extracted dataset from being handed over to the next stage. |
+| Schema change | May make the extraction configuration incompatible with the current source structure. |
+| Credential exposure | Creates a security risk and may require credential rotation and repository cleanup. |
+| Extraction interruption | May leave the batch incomplete and requires review before the dataset is accepted. |
+
+## Problem Handling Rule
+
+Problems are classified according to their effect on extraction:
+
+- **Critical problems** prevent acceptance and require correction before handover.
+- **Non-critical problems** may result in a WARNING and require documented review.
+- **Expected conditions**, such as zero incremental records when the source has not changed, do not require failure handling.
+
+Every unresolved critical problem must prevent the affected dataset from proceeding to the Transformation Stage.
+
 ## 14. General Handover Rule
 
 The extraction stage must not be handed over when there is an unresolved:

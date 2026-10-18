@@ -117,6 +117,81 @@ Example:
 
 `20261018T170820579959Z_prepaid_transactions.csv`
 
+## Naming Convention
+
+The extraction stage preserves the source column names because its responsibility is to extract source data without performing transformation or standardization.
+
+### Column Naming
+
+Source column names are preserved exactly as they exist in the PostgreSQL source database.
+
+Examples include:
+
+- `created_at`
+- `updated_at`
+- `user_id`
+- `plan_id`
+- `issueDescription`
+
+No source column is renamed during extraction.
+
+### Primary Keys
+
+Primary-key columns use the source-defined `id` field for all eight required tables.
+
+The extracted primary-key values must remain unchanged.
+
+### Foreign Keys
+
+Foreign-key fields use the source-defined naming convention.
+
+Examples:
+
+- `user_id`
+- `plan_id`
+
+The extraction process preserves these fields without renaming them.
+
+### Abbreviations
+
+Existing source abbreviations are preserved.
+
+The extraction stage does not introduce new abbreviations or expand existing source field names.
+
+### Source-to-Standardized Mapping
+
+No source-to-standardized renaming is performed during Lab 3.
+
+Any required standardization, such as converting:
+
+`issueDescription`
+
+to:
+
+`issue_description`
+
+belongs to the Transformation Stage.
+
+This boundary prevents extraction from changing the meaning or structure of the operational source data.
+
+## Schema Consistency
+
+The extracted CSV header must match the approved column configuration for its corresponding source table.
+
+Unexpected changes to source columns, data types, or required identifiers must be reviewed before the extraction is accepted.
+
+The following process applies to a detected schema change:
+
+1. Identify the affected source table and column.
+2. Compare the source structure with the documented extraction contract.
+3. Determine whether the change is intentional.
+4. Update the extraction configuration only after the change is reviewed.
+5. Update the documentation when required.
+6. Re-run extraction validation.
+7. Accept the dataset only after all critical validation checks pass.
+
+The extraction process must not silently ignore a missing or renamed required column.
+
 ## Transformation Boundary
 
 The extraction stage preserves the required source structure.
