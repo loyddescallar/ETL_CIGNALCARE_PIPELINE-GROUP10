@@ -1,7 +1,30 @@
-# Extraction
+# CignalCare+ Source Extraction
 
-This folder is reserved for the implementation of the CignalCare+ source extraction stage.
+## Purpose
 
-The extraction implementation will be added and tracked through the member branches and GitHub Issues assigned to the extraction work.
+This module performs controlled source extraction from the CignalCare+ PostgreSQL/Supabase database for Lab 3.
 
-The current repository stage is focused on establishing the documentation and project structure before the extraction implementation is formally added to this repository.
+The extraction process supports full extraction and incremental extraction using saved watermarks.
+
+## Required Source Tables
+
+The extraction process includes:
+
+- `users`
+- `prepaid_plans`
+- `prepaid_transactions`
+- `load_requests`
+- `tickets`
+- `technician_requests`
+- `troubleshoot_outcomes`
+- `support_incidents`
+
+## Configuration
+
+Database credentials are loaded through environment variables.
+
+Create a local `.env` file in the repository root:
+
+```text
+DATABASE_URL=your_database_connection_string
+DB_SSLMODE=require
