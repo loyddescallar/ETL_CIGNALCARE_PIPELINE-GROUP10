@@ -1,29 +1,26 @@
 # CignalCare+ Lab 4 — S-01 Transformation Results
 
-## Rule
+## Execution Summary
 
-- **Rule ID:** `S-01`
-- **Rule Version:** `S-01-v1.0.0`
-- **Rule Type:** Standardization
-- **Target:** `troubleshoot_outcomes.model_id`, `troubleshoot_outcomes.model_name`
-- **Canonical Output:** `canonical_model_id`
+| Item | Result |
+|---|---|
+| Rule | `S-01` |
+| Rule Version | `S-01-v1.0.0` |
+| Run ID | `TRN-20261023T075321341949Z` |
+| Parent Extraction Batch | `20261018T170820026121Z` |
+| Input Table | `troubleshoot_outcomes` |
+| Input Records | **138** |
+| Output Records | **138** |
+| Rejected Records | **0** |
+| Issue-Affected Source Records | **137 (99.28%)** |
+| Distinct Canonical Models | **6** |
+| Validation | **PASS** |
 
-## Input
+## Input Artifact
 
-- **Parent extraction batch:** `20261018T170820026121Z`
-- **Input file:** `C:\Users\loydd\Downloads\ETL_CIGNALCARE_PIPELINE-GROUP10\data\extracted\20261018T170820768165Z_troubleshoot_outcomes.csv`
-- **Input records:** 138
+- **Input file:** `data/extracted/20261018T170820768165Z_troubleshoot_outcomes.csv`
 - **Input SHA-256:** `ad6dda69cd0f5904ca7fc964090005aadf7e5a19f7154f4b8274cf960fec0085`
-
-## Processing Results
-
-- **Records read:** 138
-- **Records output:** 138
-- **Records rejected/quarantined:** 0
-- **Records modified by S-01:** 138
-- **Issue-affected source records:** 137
-- **Issue-affected percentage:** 99.28%
-- **Distinct canonical models:** 6
+- The input is a validated Lab 3 handover artifact and was not modified.
 
 ## Model Standardization Mapping
 
@@ -36,26 +33,29 @@
 | Pace HD | `model_pace_hd` | model_2, model_4, model_6, model_8 | 24 |
 | Samsung HD | `model_samsung_hd` | model_2, model_4, model_6, model_8 | 20 |
 
-## Output
+## Output Artifact
 
-- **Transformed output:** `C:\Users\loydd\Downloads\ETL_CIGNALCARE_PIPELINE-GROUP10\data\transformed\20261023T055811218622Z_S01_troubleshoot_outcomes.csv`
-- **Quarantine:** None
+- **Output file:** `data/transformed/S01_troubleshoot_outcomes_20261018T170820026121Z.csv`
 - **Output SHA-256:** `f97776d421369b28c4af56859dda9ff9a714491b8d25e459bcc9d486ef66ea32`
+- **Quarantine:** None
 
-## Validation
+## Validation Results
 
-- **Validation status:** **PASS**
-- **Record reconciliation:** 138 = 138 + 0
-- **Source values preserved:** PASS
-- **Output ID uniqueness:** PASS
-- **Model name → canonical ID:** PASS
-- **Canonical ID → model name:** PASS
-- **Deterministic canonicalization:** PASS
+- Record reconciliation: **PASS** — `138 = 138 + 0`
+- Source values preserved: **PASS**
+- Output ID uniqueness: **PASS**
+- Model name → canonical ID: **PASS**
+- Canonical ID → model name: **PASS**
+- Deterministic canonicalization: **PASS**
+- Generated file/header check: **PASS**
 
-## Execution
+## Execution Metadata
 
-- **Run ID:** `TRN-20261023T055811210068Z`
-- **Started:** `2026-10-23T05:58:11.210Z`
-- **Finished:** `2026-10-23T05:58:11.250Z`
-- **Duration:** 0.040 seconds
+- **Started:** `2026-10-23T07:53:21.341Z`
+- **Finished:** `2026-10-23T07:53:21.390Z`
+- **Duration:** `0.048 seconds`
 - **Status:** `PASS`
+
+## Acceptance
+
+The S-01 run has a rejection rate of **0.00%** and a validation status of **PASS**.
