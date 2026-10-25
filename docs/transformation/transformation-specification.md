@@ -166,13 +166,18 @@ The unused plan, false-positive technician mismatch, final-but-incomplete troubl
 | Item | Specification |
 |---|---|
 | Rule ID | `S-01` |
-| Version | `S-01-v1.0.0` |
+| Version | `S-01-v1.0.1` |
 | Type | Standardization |
 | Input table | `troubleshoot_outcomes` |
 | Input fields | `model_id`, `model_name` |
 | Output fields | `standardized_model_name`, `canonical_model_id` |
 | Basis | Standardized `model_name` |
 | Rejection condition | Blank `model_name` or invalid canonicalization |
+
+**Version note:** S-01-v1.0.1 adds safe quarantine handling for
+unusable model names and prevents runtime file-path collisions.
+The previously recorded S-01-v1.0.0 execution remains historical
+evidence and must not be rewritten retroactively.
 
 ### 4.2 Model Name Standardization
 
@@ -311,9 +316,9 @@ The reusable S-01 implementation uses:
 
 for its default output artifact. An explicit output path may be supplied for controlled handover naming.
 
-The historical completed run is preserved as:
+The validated controlled output artifact is:
 
-`20261023T055811218622Z_S01_troubleshoot_outcomes.csv`
+`data/transformed/S01_troubleshoot_outcomes_20261018T170820026121Z.csv`
 
 ### 6.5 Traceability
 
