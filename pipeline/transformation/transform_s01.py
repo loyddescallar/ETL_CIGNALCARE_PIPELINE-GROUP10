@@ -18,7 +18,7 @@ from pathlib import Path
 
 
 RULE_ID = "S-01"
-RULE_VERSION = "S-01-v1.0.0"
+RULE_VERSION = "S-01-v1.0.1"
 DEFAULT_PARENT_EXTRACTION_BATCH_ID = "20261018T170820026121Z"
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -183,7 +183,11 @@ def build_model_mapping(rows: list[dict[str, str]]) -> dict[str, dict[str, objec
     canonical_to_name: dict[str, str] = {}
 
     for name in sorted(source_ids_by_name):
-        canonical = canonical_model_id(name)
+        try:
+            canonical = canonical_model_id(name)
+        except ValueError:
+            # Unusable names are quarantined during row transformation.
+            continue
 
         if canonical in canonical_to_name and canonical_to_name[canonical] != name:
             raise ValueError(
@@ -231,6 +235,19 @@ def transform_rows(
 
         details = mapping.get(standardized_name)
         if details is None:
+            try:
+                canonical_model_id(standardized_name)
+            except ValueError:
+                rejected_row = dict(row)
+                rejected_row.update({
+                    "rejection_rule": RULE_ID,
+                    "rejection_reason": "model_name cannot produce a canonical identifier.",
+                    "source_row_number": str(source_row_number),
+                    "transformation_run_id": run_id,
+                })
+                rejected.append(rejected_row)
+                continue
+
             raise ValueError(f"Internal mapping error for model name: {standardized_name}")
 
         output_row = dict(row)
@@ -251,7 +268,7 @@ def write_csv(path: Path, columns: list[str], rows: list[dict[str, str]]) -> Non
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with path.open("w", newline="", encoding="utf-8-sig") as file:
-        writer = csv.DictWriter(file, fieldnames=columns, extrasaction="raise")
+        writer = csv.DictWriter(file, fieldnames=columns, extrasaction="raise", lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -611,6 +628,22 @@ def main() -> int:
         quarantine_path = resolve_path(args.quarantine_file, DEFAULT_QUARANTINE_DIR / f"{run_id}_S01_rejected.csv")
     else:
         quarantine_path = DEFAULT_QUARANTINE_DIR / f"{run_id}_S01_rejected.csv"
+
+    # Prevent runtime file paths from overwriting one another.
+    runtime_paths = {
+        "input": input_path.resolve(),
+        "output": output_path.resolve(),
+        "quarantine": quarantine_path.resolve(),
+        "log": log_path.resolve(),
+        "report": report_path.resolve(),
+    }
+
+    if len(set(runtime_paths.values())) != len(runtime_paths):
+        print(
+            "S-01 transformation failed: input, output, quarantine, "
+            "log, and report paths must be distinct."
+        )
+        return 1
 
     input_hash = ""
     output_hash = ""
